@@ -1,6 +1,6 @@
 {
   "name": "level51/silverstripe-fb-timeline-pics",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A small SilverStripe module that accesses the timeline pictures of a Facebook page.",
   "type": "silverstripe-module",
   "authors": [
