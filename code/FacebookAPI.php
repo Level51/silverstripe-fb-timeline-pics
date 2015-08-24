@@ -66,14 +66,16 @@ class FacebookAPI {
     }
 
     /**
-     * Get all feed post entries from the page as an array with the fields "Message" and "Date".
+     * Get all feed post entries from the page as an array with the fields "Message", "Date", "Likes" and "ImageURL" (if available).
      * @param int $limit
+     * @param bool|false $countLikes
+     * @param bool|false $lookupMedia
      * @return ArrayList
      */
-    public function getPosts($limit = 100) {
+    public function getPosts($limit = 100, $countLikes = false, $lookupMedia = false) {
         try {
             // Make the actual API request
-            $response = $this->api->get(SiteConfig::current_site_config()->PageURL . '/feed');
+            $response = $this->api->get(SiteConfig::current_site_config()->PageURL . '/posts?fields=message,picture,object_id,created_time');
 
             // Get data of feed
             $feed = json_decode($response->getBody())->data;
@@ -82,13 +84,28 @@ class FacebookAPI {
             $fA = ArrayList::create();
             $entry = array();
             foreach($feed as $post) {
+                //var_dump($post);die;
                 if(!isset($post->message))
                     continue;
 
+                // Set message and date
                 $entry['Message'] = $this->makeLinks($post->message);
                 $entry['Date'] = date('d.m.Y H:i', strtotime($post->created_time));
-                $fA->add($entry);
 
+                // Check for picture and request url
+                if($lookupMedia && isset($post->picture) && isset($post->object_id)) {
+                    $postResponse = $this->api->get($post->id . '/attachments');
+                    $postResponse = json_decode($postResponse->getBody())->data[0];
+                    if(isset($postResponse->media) && isset($postResponse->media->image))
+                        $entry['ImageURL'] = $postResponse->media->image->src;
+                }
+
+                // Count likes
+                if($countLikes) {
+                    $entry['Likes'] = count(json_decode($this->api->get($post->id . '/likes')->getBody())->data);
+                }
+
+                $fA->add($entry);
                 if($fA->count() == $limit) break;
             }
 
