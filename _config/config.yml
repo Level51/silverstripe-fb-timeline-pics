@@ -1,0 +1,9 @@
+---
+Name: facebook-profile
+After: 'framework/*', 'cms/*'
+---
+FacebookAPI:
+  graph_version: v2.4
+SiteConfig:
+  extensions:
+    - FacebookSettingsExtension
