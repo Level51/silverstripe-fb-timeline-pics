@@ -1,0 +1,10 @@
+---
+Name: facebook-profile
+After: 'framework/*', 'cms/*'
+---
+FacebookAPI:
+  graph_version: v2.4
+  pic_directory: facebook-pics
+SiteConfig:
+  extensions:
+    - FacebookSettingsExtension

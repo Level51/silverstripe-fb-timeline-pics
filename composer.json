@@ -1,0 +1,22 @@
+{
+  "name": "level51/silverstripe-fb-timeline-pics",
+  "version": "0.2.0",
+  "description": "A small SilverStripe module that accesses the timeline pictures (and posts) of a Facebook page.",
+  "type": "silverstripe-module",
+  "authors": [
+    {
+      "name": "Julian Scheuchenzuber",
+      "email": "js@lvl51.de"
+    }
+  ],
+  "require": {
+    "php": ">=5.4",
+    "facebook/php-sdk-v4": "5.0.*"
+  },
+  "suggest": {
+    "undefinedoffset/sortablegridfield": "To allow sorting of the video entries"
+  },
+  "extra": {
+    "installer-name": "fb-timeline"
+  }
+}
