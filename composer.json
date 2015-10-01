@@ -1,6 +1,6 @@
 {
   "name": "level51/silverstripe-fb-timeline-pics",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A small SilverStripe module that accesses the timeline pictures (and posts) of a Facebook page.",
   "type": "silverstripe-module",
   "authors": [
@@ -14,7 +14,8 @@
     "facebook/php-sdk-v4": "5.0.*"
   },
   "suggest": {
-    "undefinedoffset/sortablegridfield": "To allow sorting of the video entries"
+    "undefinedoffset/sortablegridfield": "To allow sorting of the video entries.",
+    "colymba/gridfield-bulk-editing-tools": "To allow bulk editing."
   },
   "extra": {
     "installer-name": "fb-timeline"

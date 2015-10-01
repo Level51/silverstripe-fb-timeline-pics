@@ -33,6 +33,8 @@ class FacebookPost extends DataObject {
         'Visible' => '1'
     );
 
+    private static $default_sort = 'Date DESC';
+
     public function fieldLabels($includerelations = true) {
         $labels = parent::fieldLabels($includerelations);
 

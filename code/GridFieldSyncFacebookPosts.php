@@ -48,7 +48,7 @@ class GridFieldSyncFacebookPosts implements GridField_HTMLProvider, GridField_Ac
         FacebookAPI::inst()->syncPosts();
 
         // Trigger API to sync pics
-        //FacebookAPI::inst()->syncPics();
+        FacebookAPI::inst()->syncPics();
 
         // Redirect to the grid overview
         Controller::curr()->redirectBack();

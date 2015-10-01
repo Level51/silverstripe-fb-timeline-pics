@@ -69,7 +69,6 @@ class FacebookAPI {
      * Get all feed post entries from the page as an array with the fields "Message", "Date", "Likes" and "ImageURL" (if available).
      * @param int $limit
      * @param bool|false $countLikes
-     * @param bool|false $lookupMedia
      * @return ArrayList
      */
     public function requestPosts($limit = 100, $countLikes = false) {
@@ -84,7 +83,6 @@ class FacebookAPI {
             $fA = ArrayList::create();
             $entry = array();
             foreach($feed as $post) {
-                //var_dump($post);die;
                 if(!isset($post->message))
                     continue;
 
@@ -114,10 +112,10 @@ class FacebookAPI {
      * @param int $limit
      * @return ArrayList
      */
-    public function requestTimelinePics($limit = 100) {
+    public function requestTimelinePics($limit = 100, $countLikes = false) {
         try {
             // Make the actual API request
-            $response = $this->api->get('/' . $this->albumId . '/photos?fields=name,source&limit=' . $limit);
+            $response = $this->api->get('/' . $this->albumId . '/photos?fields=name,source,created_time&limit=' . $limit);
 
             // Get data of album
             $album = json_decode($response->getBody())->data;
@@ -128,7 +126,14 @@ class FacebookAPI {
             foreach($album as $picture) {
                 $photo['ID'] = $picture->id;
                 $photo['Source'] = $picture->source;
-                if(isset($picture->name)) $photo['Name'] = $picture->name;
+                $photo['Date'] = date('d-m-Y H:i', strtotime($picture->created_time));
+                if(isset($picture->name)) $photo['Name'] = $this->makeLinks($picture->name);
+
+                // Count likes
+                if($countLikes) {
+                    $photo['Likes'] = count(json_decode($this->api->get($picture->id . '/likes')->getBody())->data);
+                }
+
                 $pA->add($photo);
             }
 
@@ -171,8 +176,8 @@ class FacebookAPI {
         $picDir = Folder::find_or_make(Config::inst()->get('FacebookAPI', 'pic_directory'));
 
         // Get pics and create records
-        foreach($this->requestTimelinePics($limit) as $pic) {
-            if(!FacebookTimelinePic::get()->filter('UID', $pic->ID)->first()) {
+        foreach($this->requestTimelinePics($limit, true) as $pic) {
+            if(!($p = FacebookTimelinePic::get()->filter('UID', $pic->ID)->first())) {
                 $p = new FacebookTimelinePic();
 
                 // Get image name from URI
@@ -184,11 +189,24 @@ class FacebookAPI {
                 // Generate
                 $p->UID = $pic->ID;
                 $p->Caption = $pic->Name;
+                $p->Likes = $pic->Likes;
+                $p->Date = $pic->Date;
                 $p->Name = $imgName;
                 $p->Filename = $picDir->Filename . $imgName;
                 $p->Title = $imgName;
                 $p->ParentID = $picDir->ID;
                 $p->OwnerID = Member::currentUserID();
+                $p->write();
+
+                // Check if there was an existing wall post entry for the pic
+                if($post = FacebookPost::get()->filter('UID', $p->UID)->first()) {
+                    if($post->PicID == 0) {
+                        $post->PicID = $p->ID;
+                        $post->write();
+                    }
+                }
+            } else {
+                $p->Likes = $pic->Likes;
                 $p->write();
             }
         }

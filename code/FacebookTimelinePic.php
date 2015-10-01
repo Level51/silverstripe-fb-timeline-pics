@@ -9,6 +9,8 @@
 class FacebookTimelinePic extends Image {
     private static $db = array(
         'UID' => 'Varchar',
+        'Likes' => 'Int',
+        'Date' => 'SS_Datetime',
         'SortOrder' => 'Int',
         'Visible' => 'Boolean',
         'Caption' => 'HTMLText'
@@ -32,14 +34,17 @@ class FacebookTimelinePic extends Image {
     private static $singular_name = 'Facebook Timeline Pic';
     private static $plural_name = 'Facebook Timeline Pics';
     private static $summary_fields = array('CMSThumbnail', 'Displays', 'Caption');
+    private static $default_sort = 'Date DESC';
 
     public function fieldLabels($includerelations = true) {
         $labels = parent::fieldLabels($includerelations);
 
         $labels['Name'] = _t('FacebookTimelinePic.NAME', 'Name');
         $labels['Caption'] = _t('FacebookTimelinePic.CAPTION', 'Message');
+        $labels['Date'] = _t('FacebookTimelinePic.DATE', 'Posted on');
         $labels['Displays'] = _t('FacebookTimelinePic.VISIBLE', 'Is visible?');
         $labels['CMSThumbnail'] = _t('FacebookTimelinePic.THUMB', 'Thumbnail');
+        $labels['Likes'] = _t('FacebookTimelinePic.LIKES', 'Likes');
 
         return $labels;
     }

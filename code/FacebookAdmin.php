@@ -33,6 +33,11 @@ class FacebookAdmin extends ModelAdmin {
             $config->addComponent(new GridFieldSortableRows('SortOrder'));
         }
 
+        // Add bulk editing component if installed
+        if(class_exists("GridFieldBulkManager")) {
+            $config->addComponent(new GridFieldBulkManager());
+        }
+
         return $form;
     }
 }
